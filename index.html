@@ -3,7 +3,7 @@
 <meta name="description" content="Adivinhe o destino brasileiro do dia pela foto. Seis palpites, com distância e direção a cada erro.">
 <meta property="og:title" content="Rumo · destino do dia"><meta property="og:description" content="Adivinhe o destino brasileiro do dia pela foto."><meta property="og:image" content="https://alexswbraga.github.io/rumo/img/foz.jpg">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.RUMO_CFG={practice:false,url:"https://alexswbraga.github.io/rumo/"};</script>
+<script>window.RUMO_CFG={practice:false,url:"https://alexswbraga.github.io/rumo/",wa:null,supa:null};</script>
 <script data-goatcounter="https://rumo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -93,7 +93,7 @@ button,input{font:inherit;color:inherit}
 .try .dir svg{width:16px;height:16px}
 .try.win{background:rgba(46,230,138,.14);border-color:rgba(46,230,138,.55)}
 
-.mapcard{position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#1B3A78 0%,#0C1736 62%);border:1px solid var(--line);aspect-ratio:4/3.1;max-width:100%}
+.mapcard{position:relative;border-radius:18px;overflow:hidden;background:var(--chip);border:1px solid var(--line);aspect-ratio:4/3.1;max-width:100%;max-height:440px;width:100%}
 #map{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
 .maphint{position:absolute;inset:auto 12px 12px 12px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;pointer-events:none}
 .maphint b{color:var(--ink);font-weight:600}
@@ -116,11 +116,22 @@ button,input{font:inherit;color:inherit}
 .btn{border:1px solid var(--line);background:var(--chip2);border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
 .btn.primary{background:var(--go);color:var(--go-ink);border-color:transparent}
 .soon{display:grid;gap:8px}
+.soon a.btn{text-decoration:none;text-align:center;color:var(--ink)}
+.rank{display:grid;gap:10px;background:rgba(0,0,0,.18);border-radius:14px;padding:14px}
+.rank h3{margin:0;font:800 18px/1.2 var(--display)}
+.rform{display:flex;gap:8px}
+.rform input{flex:1;min-width:0;background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:11px 12px;color:var(--ink)}
+.rform input:focus{outline:none;border-color:var(--go)}
+.rlist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.rlist li{display:flex;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:10px;background:var(--chip);font-size:14px}
+.rlist li.me{background:rgba(0,212,200,.16);outline:1px solid rgba(0,212,200,.5)}
+.rlist .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rlist .v{font:600 13px var(--mono);color:var(--muted);white-space:nowrap}
+.rnote{margin:0;font-size:13px;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .soon .row{display:flex;gap:8px;flex-wrap:wrap}
 .soon .btn{flex:1 1 200px}
 .soon p{margin:0;font-size:13px;color:var(--go)}
-.partner{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--muted)}
-.partner b{color:var(--ink)}
 .next{font:600 12px var(--mono);color:var(--muted)}
 .how{font-size:14px;color:var(--muted)}
 .how summary{cursor:pointer;font-weight:700;color:var(--ink)}
@@ -166,7 +177,7 @@ button,input{font:inherit;color:inherit}
     <div class="mapcard" id="mapcard">
       <canvas id="map" aria-label="Mapa do Brasil com os seus palpites"></canvas>
       <div class="mapempty" id="mapempty">Seus palpites aparecem aqui. Cada erro desenha uma faixa onde o destino pode estar.</div>
-      <div class="maphint"><span class="legend"><span style="--c:var(--near)">perto</span><span style="--c:var(--mid)">médio</span><span style="--c:var(--far)">longe</span></span><span>arraste para girar</span></div>
+      <div class="maphint"><span class="legend"><span style="--c:var(--near)">perto</span><span style="--c:var(--mid)">médio</span><span style="--c:var(--far)">longe</span></span><span>faixa = onde pode estar</span></div>
     </div>
 
     <ol class="tries" id="tries"></ol>
@@ -175,7 +186,8 @@ button,input{font:inherit;color:inherit}
       <summary>Como jogar</summary>
       <p>Todo dia sai um destino brasileiro, o mesmo para todo mundo. Você tem 6 palpites. Cada erro mostra a distância e uma das 8 direções até o destino, e desenha no mapa a faixa onde ele pode estar. A foto abre um pouco a cada erro, e as pistas aparecem no 3º, 4º e 5º palpites.</p>
     </details>
-  </main>
+  <p style="margin:0;text-align:center;font-size:12px"><a href="creditos.html" style="color:var(--muted)">Créditos e privacidade</a></p>
+</main>
 </div>
 
 <script>
@@ -240,8 +252,9 @@ function guess(i){
   if(state.done)return;
   if(state.g.includes(i)){$('msg').textContent='Você já tentou essa cidade.';return}
   if(!practice&&state.g.length===0){ev('partida-iniciada');const seen=store.get('rumo-days',[]);if(!seen.includes(DAY)){if(seen.includes(DAY-1))ev('voltou-dia-seguinte');if(seen.length)ev('voltou-algum-dia');else ev('primeira-partida');seen.push(DAY);store.set('rumo-days',seen.slice(-60))}}
+  if(!state.t0)state.t0=Date.now();
   state.g.push(i);const x=info(i);
-  if(x.win||state.g.length>=MAXT){state.done=true;state.won=x.win;if(!practice)record(x.win)}
+  if(x.win||state.g.length>=MAXT){state.done=true;state.won=x.win;state.t1=Date.now();if(!practice)record(x.win)}
   if(!practice)store.set(key,state);
   $('guess').value='';hideSug();$('msg').textContent='';
   const h=$('hero');if(!x.win&&!reduce){h.classList.remove('shake');void h.offsetWidth;h.classList.add('shake')}
@@ -266,15 +279,39 @@ function showEnd(){
   if(CFG.practice){const pr=document.createElement('button');pr.className='btn';pr.type='button';pr.id='train';pr.textContent='Treinar com outro destino';
     pr.onclick=()=>{ev('treino');practice=true;let q;do{q=Math.floor(Math.random()*DEST.length)}while(DEST[q]===dest&&DEST.length>1);load(q);window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})};ac.append(pr)}
   if(practice){const bk=document.createElement('button');bk.className='btn';bk.type='button';bk.textContent='Voltar ao destino do dia';bk.onclick=()=>{practice=false;load()};ac.append(bk)}
-  // teste de intenção: mede quem quer e-mail ou ranking antes de construir
   let soon=null;if(!practice){soon=document.createElement('div');soon.className='soon';
     const row=document.createElement('div');row.className='row';const msg=document.createElement('p');msg.hidden=true;msg.setAttribute('aria-live','polite');
-    const mk=(id,txt,evn)=>{const b=document.createElement('button');b.type='button';b.className='btn';b.id=id;b.textContent=txt;b.onclick=()=>{ev(evn);b.disabled=true;msg.hidden=false;msg.textContent='Estamos preparando isso. Obrigado pelo interesse!'};return b};
-    row.append(mk('wantEmail','Receber o destino do dia por e-mail','quer-email'),mk('wantRank','Entrar no ranking com amigos','quer-ranking'));soon.append(row,msg)}
-  const pa=document.createElement('div');pa.className='partner';pa.innerHTML='<b>Espaço de parceiro (exemplo):</b> hotel, passeio ou passagem para '+dest.city+'.';
+    const intent=(id,txt,evn)=>{const b=document.createElement('button');b.type='button';b.className='btn';b.id=id;b.textContent=txt;b.onclick=()=>{ev(evn);b.disabled=true;msg.hidden=false;msg.textContent='Estamos preparando isso. Obrigado pelo interesse!'};return b};
+    if(CFG.wa){const w=document.createElement('a');w.className='btn';w.id='wa';w.href=CFG.wa;w.target='_blank';w.rel='noopener';w.textContent='Receber o destino do dia no WhatsApp';w.onclick=()=>ev('seguiu-whatsapp');row.append(w)}
+    else row.append(intent('wantWa','Receber o destino do dia no WhatsApp','quer-whatsapp'));
+    if(!CFG.supa)row.append(intent('wantRank','Entrar no ranking com amigos','quer-ranking'));
+    soon.append(row,msg)}
+  const rk=(!practice&&CFG.supa)?rankBlock():null;
   const nx=document.createElement('div');nx.className='next';nx.id='next';
-  e.append(out,ac);if(soon)e.append(soon);e.append(pa,nx);tick();
+  e.append(out,ac);if(rk)e.append(rk);if(soon)e.append(soon);e.append(nx);tick();
 }
+function devId(){let d=store.get('rumo-dev',null);if(!d){d=(crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,()=>(Math.random()*16|0).toString(16)));store.set('rumo-dev',d)}return d}
+function api(path,opt){const k=CFG.supa.key;return fetch(CFG.supa.url+'/rest/v1/'+path,Object.assign({headers:{apikey:k,Authorization:'Bearer '+k,'Content-Type':'application/json',Prefer:'return=minimal'}},opt||{}))}
+function rankBlock(){
+  const box=document.createElement('div');box.className='rank';
+  const h=document.createElement('h3');h.textContent='Ranking de hoje';
+  const f=document.createElement('form');f.className='rform';
+  const lab=document.createElement('label');lab.htmlFor='nick';lab.className='sr';lab.textContent='Seu apelido';
+  const inp=document.createElement('input');inp.id='nick';inp.maxLength=20;inp.placeholder='Seu apelido';inp.autocomplete='nickname';inp.value=store.get('rumo-nick','');
+  const go=document.createElement('button');go.type='submit';go.className='btn primary';go.textContent='Entrar';
+  f.append(lab,inp,go);
+  const ol=document.createElement('ol');ol.className='rlist';const note=document.createElement('p');note.className='rnote';note.setAttribute('aria-live','polite');
+  const me=devId();const done=store.get('rumo-rank-'+DAY,false);if(done)f.hidden=true;
+  async function list(){try{const r=await api('ranking?day=eq.'+DAY+'&select=name,guesses,secs,device&order=guesses.asc,secs.asc&limit=20',{method:'GET'});if(!r.ok)throw 0;const rows=await r.json();ol.innerHTML='';
+      if(!rows.length){note.textContent='Ninguém entrou ainda. Seja o primeiro.';return}note.textContent='';
+      rows.forEach((x,i)=>{const li=document.createElement('li');if(x.device===me)li.className='me';const n=document.createElement('span');n.className='n';n.textContent=(i+1)+'. '+x.name;const v=document.createElement('span');v.className='v';v.textContent=(x.guesses>6?'X':x.guesses)+'/6 · '+(x.secs>=60?Math.floor(x.secs/60)+'min '+(x.secs%60)+'s':x.secs+'s');li.append(n,v);ol.appendChild(li)})}
+    catch(_){note.textContent='O ranking não carregou agora. Tente de novo mais tarde.'}}
+  f.onsubmit=async e=>{e.preventDefault();const name=inp.value.trim().replace(/\s+/g,' ');if(name.length<2){note.textContent='Use um apelido com pelo menos 2 letras.';return}
+    go.disabled=true;store.set('rumo-nick',name);const secs=Math.max(3,Math.min(86400,Math.round(((state.t1||Date.now())-(state.t0||Date.now()))/1000)));
+    try{const r=await api('ranking',{method:'POST',body:JSON.stringify({day:DAY,device:me,name,guesses:state.won?state.g.length:7,secs})});
+      if(r.ok||r.status===409){store.set('rumo-rank-'+DAY,true);f.hidden=true;ev('entrou-ranking');list()}else{note.textContent='Não deu para entrar agora. Tente de novo.';go.disabled=false}}
+    catch(_){note.textContent='Sem conexão com o ranking agora. Tente de novo.';go.disabled=false}};
+  box.append(h,f,ol,note);list();return box}
 function tick(){const el=$('next');if(!el)return;if(practice){el.textContent='';return}const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1);const s=Math.max(0,Math.floor((m-n)/1000));el.textContent='Próximo destino em '+String(Math.floor(s/3600)).padStart(2,'0')+':'+String(Math.floor(s%3600/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
 setInterval(tick,1000);
 
@@ -293,24 +330,21 @@ const map=(()=>{
   function build(){
     const cv=$('map');ren=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true});ren.setPixelRatio(Math.min(2,devicePixelRatio||1));
     scene=new T.Scene();cam=new T.PerspectiveCamera(30,1,0.1,800);
-    scene.add(new T.HemisphereLight(0xdfe8ff,0x0a1430,1.15));const sun=new T.DirectionalLight(0xffffff,1.2);sun.position.set(-20,-30,60);scene.add(sun);
+    scene.add(new T.HemisphereLight(0xffffff,0x0a1430,1.6));const sun=new T.DirectionalLight(0xffffff,.45);sun.position.set(-10,-20,60);scene.add(sun);
     root=new T.Group();scene.add(root);dyn=new T.Group();root.add(dyn);
-    const mat=new T.MeshStandardMaterial({color:0x1E3566,roughness:.8,metalness:.05});MAT.base=mat;MAT.region=new T.MeshStandardMaterial({color:0x2C5AA8,roughness:.8});MAT.state=new T.MeshStandardMaterial({color:0x00D4C8,roughness:.6,emissive:0x00433f,emissiveIntensity:.4});
-    const side=new T.MeshStandardMaterial({color:0x13244A,roughness:1});
-    const edge=new T.LineBasicMaterial({color:0x5C80C8,transparent:true,opacity:.9});
+    const mat=new T.MeshStandardMaterial({color:0x22355F,roughness:1});MAT.base=mat;MAT.region=new T.MeshStandardMaterial({color:0x2E4C8A,roughness:1});MAT.state=new T.MeshStandardMaterial({color:0x00D4C8,roughness:1,emissive:0x004a45,emissiveIntensity:.35});
+    const side=new T.MeshBasicMaterial({color:0x0C1836});
+    const edge=new T.LineBasicMaterial({color:0x0F1D3E,transparent:true,opacity:.9});
     for(const uf in GEO){for(const poly of GEO[uf]){
       const pts=poly.map(([lo,la])=>{const p=P(lo,la);return new T.Vector2(p[0],p[1])});
-      const g=new T.ExtrudeGeometry(new T.Shape(pts),{depth:.6,bevelEnabled:false});const me=new T.Mesh(g,[mat,side]);root.add(me);(MESH[uf]=MESH[uf]||[]).push(me);
-      const lp=pts.map(v=>new T.Vector3(v.x,v.y,.62));lp.push(lp[0].clone());root.add(new T.Line(new T.BufferGeometry().setFromPoints(lp),edge));
+      const g=new T.ExtrudeGeometry(new T.Shape(pts),{depth:.35,bevelEnabled:false});const me=new T.Mesh(g,[mat,side]);root.add(me);(MESH[uf]=MESH[uf]||[]).push(me);
+      const lp=pts.map(v=>new T.Vector3(v.x,v.y,.37));lp.push(lp[0].clone());root.add(new T.Line(new T.BufferGeometry().setFromPoints(lp),edge));
     }}
     resize();new ResizeObserver(resize).observe($('mapcard'));
     if('IntersectionObserver' in window)new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible)loop()}).observe($('mapcard'));
-    cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw};cv.setPointerCapture(e.pointerId)});
-    cv.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x;if(Math.abs(dx)>4){yaw=drag.yaw+dx*0.006;yawV=0;loop()}});
-    const up=()=>{drag=null};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
   }
   function resize(){if(!ren)return;const r=$('mapcard').getBoundingClientRect();ren.setSize(r.width,r.height,false);cam.aspect=r.width/Math.max(1,r.height);cam.updateProjectionMatrix();loop()}
-  function place(){const tilt=0.62;const d=view.dist;cam.position.set(view.tx+Math.sin(yaw)*d*Math.sin(tilt),view.ty-Math.cos(yaw)*d*Math.sin(tilt),d*Math.cos(tilt));cam.up.set(0,0,1);cam.lookAt(view.tx,view.ty,0)}
+  function place(){const tilt=0.42;const d=view.dist;cam.position.set(view.tx+Math.sin(yaw)*d*Math.sin(tilt),view.ty-Math.cos(yaw)*d*Math.sin(tilt),d*Math.cos(tilt));cam.up.set(0,0,1);cam.lookAt(view.tx,view.ty,0)}
   function loop(){if(raf||!ready)return;raf=requestAnimationFrame(frame)}
   let anim=[];
   function frame(now){raf=0;if(!visible)return;
@@ -323,13 +357,13 @@ const map=(()=>{
   }
   function focus(lo,la,dist){const p=P(lo,la);view.want.tx=p[0]*0.5;view.want.ty=p[1]*0.5-2;view.want.dist=dist;loop()}
   function tint(n){const go=()=>{const reg=REG[dest.uf];for(const uf in MESH){const m=n>=4&&uf===dest.uf?MAT.state:n>=3&&REG[uf]===reg?MAT.region:MAT.base;MESH[uf].forEach(x=>{x.material[0]=m})}loop()};if(ready)go();else queue.push(go)}
-  function pin(lo,la,color,h){const p=P(lo,la);const g=new T.Group();g.position.set(p[0],p[1],.6);
+  function pin(lo,la,color,h){const p=P(lo,la);const g=new T.Group();g.position.set(p[0],p[1],.35);
     const stem=new T.Mesh(new T.CylinderGeometry(.09,.09,h,8),new T.MeshBasicMaterial({color}));stem.rotation.x=Math.PI/2;stem.position.z=h/2;g.add(stem);
     const head=new T.Mesh(new T.SphereGeometry(.6,16,12),new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.55}));head.position.z=h;g.add(head);
     dyn.add(g);return g}
   function sector(lo,la,km,d,color){const p=P(lo,la);const r=km/111,w=Math.max(.7,r*.09);const th=(90-d*45)*Math.PI/180;
     const m=new T.Mesh(new T.RingGeometry(Math.max(.2,r-w),r+w,64,1,th-Math.PI/8,Math.PI/4),new T.MeshBasicMaterial({color,transparent:true,opacity:.0,side:T.DoubleSide,depthWrite:false}));
-    m.position.set(p[0],p[1],.66);dyn.add(m);return m}
+    m.position.set(p[0],p[1],.4);dyn.add(m);return m}
   function addGuess(x,instant){const go=()=>{
       const c=new T.Color(x.win?COL.near:COL[band(x.km)]);
       const g=pin(x.m[3],x.m[2],c,x.win?4.5:3);
@@ -340,9 +374,9 @@ const map=(()=>{
   function reveal(instant){const go=()=>{
       const p=P(dest.m[3],dest.m[2]);const c=new T.Color(COL.near);
       if(!state.won)pin(dest.m[3],dest.m[2],c,4.5);
-      const ring=new T.Mesh(new T.RingGeometry(.8,1.2,48),new T.MeshBasicMaterial({color:c,transparent:true,opacity:.8,side:T.DoubleSide,depthWrite:false}));ring.position.set(p[0],p[1],.68);dyn.add(ring);
+      const ring=new T.Mesh(new T.RingGeometry(.8,1.2,48),new T.MeshBasicMaterial({color:c,transparent:true,opacity:.8,side:T.DoubleSide,depthWrite:false}));ring.position.set(p[0],p[1],.42);dyn.add(ring);
       const tA=(performance.now()-t0)/1000;if(!reduce)anim.push(t=>{const u=((t-tA)%1.6)/1.6;ring.scale.setScalar(1+u*5);ring.material.opacity=.8*(1-u);return true});
-      focus(dest.m[3],dest.m[2],62);loop()};
+      focus(dest.m[3],dest.m[2],78);loop()};
     if(ready)go();else{queue.push(go);init()}}
   function reset(){const go=()=>{while(dyn.children.length)dyn.remove(dyn.children[0]);anim=[];view.want={...HOME};for(const uf in MESH)MESH[uf].forEach(m=>{m.material[0]=MAT.base});loop()};if(ready)go();else queue.push(go)}
   return{init,addGuess,reveal,reset,tint};
@@ -367,7 +401,4 @@ load();
 if(window.requestIdleCallback)requestIdleCallback(()=>map.init(),{timeout:1500});else setTimeout(()=>map.init(),1500);
 </script>
 
-<footer style="max-width:520px;margin:24px auto 0;padding:0 max(16px,env(safe-area-inset-left,0px));font:400 12px/1.5 Overpass,Arial,sans-serif;color:#7b8783">
-Fotos do Wikimedia Commons, com autor e licença indicados ao fim de cada partida (<a href="creditos.html" style="color:inherit">todos os créditos</a>). Base de municípios: kelvins/municipios-brasileiros. Medição de uso anônima, sem cookies (GoatCounter).
-</footer>
 </body></html>
